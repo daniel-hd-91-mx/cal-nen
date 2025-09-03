@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preload" as="image" href="https://raw.githubusercontent.com/daniel-hd-91-mx/cal-nen/main/Logo-Dan-Hd_Imagotipo-BLACK.png">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Source+Serif+Pro:wght@400;700;900&display=swap');
@@ -1069,7 +1070,6 @@
                 
                 nenResultBox.innerHTML = nenHTML;
                 
-                Object.values(calculators).forEach(calc => calc.currentSection.open = false);
                 nenButtonContainer.classList.add('hidden');
 
                 finalSeparator.classList.add('hidden');
@@ -1116,6 +1116,13 @@
             });
 
             downloadResultsBtn.addEventListener('click', () => {
+                if (!window.jspdf) {
+                    alert('La librería para generar PDF no ha cargado. Por favor, intenta de nuevo en un momento.');
+                    return;
+                }
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
                 const today = new Date();
                 const mode = modeSelect.value;
                 const iso = today.toISOString().slice(0,10);
@@ -1191,15 +1198,12 @@ SCORES INDIVIDUALES:
 ${detailedClassifications}
 --------------------------------------------------
                 `;
-                const blob = new Blob([report.trim()], { type: 'text/plain' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `Resultados_NEN_${mode==='semanal'?'SEMANA':'DIA'}_${iso}.txt`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
+
+                doc.setFontSize(10);
+                const lines = doc.splitTextToSize(report, 180);
+                doc.text(lines, 15, 20);
+                doc.save(`Resultados_NEN_${mode==='semanal'?'SEMANA':'DIA'}_${iso}.pdf`);
+
             });
             
             document.getElementById('restart-btn').addEventListener('click', () => {
