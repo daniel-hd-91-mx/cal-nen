@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora NEN para Coaches</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="image" href="https://raw.githubusercontent.com/daniel-hd-91-mx/cal-nen/main/Logo-Dan-Hd_Imagotipo-BLACK.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Source+Serif+Pro:wght@400;700;900&display=swap');
+        
+        body {
+            background-color: #f9fafb;
+        }
+        .font-serif { 
+            font-family: 'Source Serif Pro', serif; 
+        }
+        .font-sans { 
+            font-family: 'Open Sans', sans-serif; 
+        }
+        .card {
+            background-color: white;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            position: relative; /* For icon positioning */
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            padding: 0.75rem 1rem;
+            width: 100%;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background-color: #f9442c;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #e13d26;
+        }
+        .btn-primary:disabled {
+            background-color: #fca5a5;
+            cursor: not-allowed;
+        }
+        .btn-secondary {
+            background-color: #e5e7eb;
+            color: #1f2937;
+        }
+        .btn-secondary:hover {
+            background-color: #d1d5db;
+        }
+        .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 5px;
+            outline: none;
+            opacity: 0.7;
+            transition: opacity .2s;
+        }
+        .slider:hover {
+            opacity: 1;
+        }
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            background: #f9442c;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        .slider::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            background: #f9442c;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        .slider:disabled {
+             background: #f3f4f6;
+        }
+        .slider:disabled::-webkit-slider-thumb {
+            background: #fca5a5;
+        }
+         .input-number {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            text-align: center;
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+        .input-number:disabled {
+            background-color: #f3f4f6;
+            cursor: not-allowed;
+        }
+        .result-box {
+            background-color: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+        summary {
+            cursor: pointer;
+            list-style: none; /* Ocultar el marcador por defecto */
+        }
+        summary.disabled {
+            pointer-events: none;
+            opacity: 0.5;
+        }
+        summary::-webkit-details-marker {
+            display: none;
+        }
+        details > summary {
+            padding: 0.5rem 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        details[open] > summary {
+            margin-bottom: 1rem;
+        }
+        summary .arrow {
+            transition: transform 0.2s;
+            color: #9ca3af;
+        }
+        details[open] summary .arrow {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+<body class="font-sans text-gray-800">
+
+    <div id="app" class="mx-auto max-w-lg p-4 space-y-6">
+        
+        <img src="https://raw.githubusercontent.com/daniel-hd-91-mx/cal-nen/main/Logo-Dan-Hd_Imagotipo-BLACK.png" alt="Logo" class="mx-auto w-[250px] pt-4" />
+
+        <div class="card">
+            <!-- Info Icon -->
+            <div class="absolute top-4 left-4">
+                <button id="info-btn" class="text-gray-400 hover:text-gray-600 focus:outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Intro -->
+            <div class="text-center">
+                <h1 class="text-2xl font-bold font-serif leading-tight">Calcula tu NEN (Nivel de Esclavitud al Negocio)</h1>
+            </div>
+
+            <!-- Mode Selector -->
+            <div class="mt-6">
+                <label for="calculation-mode-select" class="block text-sm font-bold text-gray-700 text-center mb-2">Selecciona el período de cálculo</label>
+                <select id="calculation-mode-select" class="block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500">
+                    <option value="semanal" selected>Cálculo de la Semana</option>
+                    <option value="diario">Cálculo del Día</option>
+                </select>
+                <div class="mt-4">
+                    <button id="start-calculation-btn" class="btn btn-primary">Comenzar Cálculo</button>
+                </div>
+            </div>
+            
+            <div id="indicators-container" class="hidden">
+                <hr class="my-6"/>
+
+                <!-- ARC Section -->
+                <details id="arc-section">
+                    <summary>
+                        <span class="text-lg font-bold font-serif">1. Acción Reactiva Compulsiva (ARC)</span>
+                        <span class="arrow">▼</span>
+                    </summary>
+                    <div class="space-y-4">
+                        <!-- Weekly Input -->
+                        <div id="arc-weekly-input" class="text-center space-y-3">
+                             <div class="grid grid-cols-2 gap-4 text-sm font-semibold text-gray-600 px-1">
+                                <div class="text-left">Eventos inesperados que no delegaste y abordaste</div>
+                                <div class="text-right">Actividades de tu rol completadas</div>
+                            </div>
+                            <div class="flex justify-between items-center space-x-2">
+                                <span id="arc-p1-val" class="font-bold text-xl w-1/5 text-right text-red-600">50%</span>
+                                <input id="arc-slider" type="range" min="0" max="100" value="50" class="slider w-3/5">
+                                <span id="arc-p2-val" class="font-bold text-xl w-1/5 text-left text-green-600">50%</span>
+                            </div>
+                        </div>
+                        <!-- Daily Input -->
+                        <div id="arc-daily-input" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="font-semibold block text-center text-sm h-12"># de Eventos inesperados que no delegaste y abordaste</label>
+                                <input id="arc-q1-daily" type="number" min="0" class="input-number mt-2" placeholder="Ej: 5">
+                            </div>
+                            <div>
+                                <label class="font-semibold block text-center text-sm h-12"># de Actividades de tu rol completadas</label>
+                                <input id="arc-q2-daily" type="number" min="0" class="input-number mt-2" placeholder="Ej: 2">
+                            </div>
+                        </div>
+
+                        <button id="arc-calculate-btn" class="btn btn-primary mt-4" disabled>Calcular ARC</button>
+                        <div id="arc-result" class="result-box hidden" aria-live="polite"></div>
+                        <details class="mt-4">
+                            <summary class="text-sm font-semibold text-gray-600 italic">+ Ver explicación del indicador</summary>
+                            <div id="arc-explanation-text" class="text-sm bg-gray-100 p-3 rounded-md mt-2">
+                               <!-- Text updated dynamically -->
+                            </div>
+                        </details>
+                    </div>
+                </details>
+
+                <hr class="my-6"/>
+
+                <!-- CE Section -->
+                <details id="ce-section">
+                    <summary class="disabled">
+                        <span class="text-lg font-bold font-serif">2. Control Excesivo (CE)</span>
+                        <span class="arrow">▼</span>
+                    </summary>
+                     <div class="space-y-4">
+                        <!-- Weekly Input -->
+                        <div id="ce-weekly-input" class="text-center space-y-3">
+                             <div class="grid grid-cols-2 gap-4 text-sm font-semibold text-gray-600 px-1">
+                                <div class="text-left">Horas resolviendo tareas por tu equipo</div>
+                                <div class="text-right">Horas en tu rol real de Director/Dueño</div>
+                            </div>
+                            <div class="flex justify-between items-center space-x-2">
+                                <span id="ce-p1-val" class="font-bold text-xl w-1/5 text-right text-red-600">50%</span>
+                                <input id="ce-slider" type="range" min="0" max="100" value="50" class="slider w-3/5">
+                                <span id="ce-p2-val" class="font-bold text-xl w-1/5 text-left text-green-600">50%</span>
+                            </div>
+                        </div>
+                        <!-- Daily Input -->
+                        <div id="ce-daily-input" class="hidden grid grid-cols-1 gap-6">
+                            <div>
+                                <label class="font-semibold block text-center text-sm"># de Horas de tu Jornada Laboral</label>
+                                <input id="ce-q-total-daily" type="number" min="0" class="input-number mt-2" placeholder="Ej: 8">
+                            </div>
+                            <div id="ce-daily-slider-container" class="text-center space-y-3 pt-4 hidden">
+                                <div class="grid grid-cols-2 gap-4 text-sm font-semibold text-gray-600 px-1">
+                                    <div class="text-left">Horas resolviendo por equipo</div>
+                                    <div class="text-right">Horas en tu rol</div>
+                                </div>
+                                <div class="flex justify-between items-center space-x-2">
+                                    <span id="ce-daily-p1-val" class="font-bold text-xl w-1/5 text-right text-red-600">0 h</span>
+                                    <input id="ce-daily-slider" type="range" min="0" max="8" value="0" step="0.5" class="slider w-3/5">
+                                    <span id="ce-daily-p2-val" class="font-bold text-xl w-1/5 text-left text-green-600">0 h</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button id="ce-calculate-btn" class="btn btn-primary mt-4" disabled>Calcular CE</button>
+                        <div id="ce-result" class="result-box hidden" aria-live="polite"></div>
+                        <details class="mt-4">
+                            <summary class="text-sm font-semibold text-gray-600 italic">+ Ver explicación del indicador</summary>
+                            <div id="ce-explanation-text" class="text-sm bg-gray-100 p-3 rounded-md mt-2">
+                                <!-- Text updated dynamically -->
+                            </div>
+                        </details>
+                    </div>
+                </details>
+
+                <hr class="my-6"/>
+
+                <!-- SP Section -->
+                <details id="sp-section">
+                    <summary class="disabled">
+                        <span class="text-lg font-bold font-serif">3. Sacrificio Personal (SP)</span>
+                        <span class="arrow">▼</span>
+                    </summary>
+                     <div class="space-y-4">
+                        <!-- Weekly Input -->
+                        <div id="sp-weekly-input" class="text-center space-y-3">
+                             <div class="grid grid-cols-2 gap-4 text-sm font-semibold text-gray-600 px-1">
+                                <div class="text-left">Horas de trabajo</div>
+                                <div class="text-right">Horas de descanso, familia y vida personal</div>
+                            </div>
+                            <div class="flex justify-between items-center space-x-2">
+                                <span id="sp-p1-val" class="font-bold text-xl w-1/5 text-right text-red-600">50%</span>
+                                <input id="sp-slider" type="range" min="0" max="100" value="50" class="slider w-3/5">
+                                <span id="sp-p2-val" class="font-bold text-xl w-1/5 text-left text-green-600">50%</span>
+                            </div>
+                        </div>
+                        <!-- Daily Input -->
+                        <div id="sp-daily-input" class="hidden grid grid-cols-1 gap-6">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label for="sp-wake-time" class="font-semibold block text-center text-sm">Hora que te despertaste</label>
+                                    <input id="sp-wake-time" type="time" class="input-number mt-2">
+                                </div>
+                                <div>
+                                    <label for="sp-sleep-time" class="font-semibold block text-center text-sm">Hora que te dormiste</label>
+                                    <input id="sp-sleep-time" type="time" class="input-number mt-2">
+                                </div>
+                            </div>
+                             <div class="text-center space-y-2 pt-4">
+                                 <p class="text-sm font-semibold text-gray-700"># de Horas de trabajo (de tu jornada): <span id="sp-work-hours-display" class="font-bold">0</span></p>
+                                 <p class="text-sm font-semibold text-gray-700"># de Horas de descanso, familia y vida personal (calculado): <span id="sp-rest-hours-display" class="font-bold">0</span></p>
+                             </div>
+                        </div>
+                        <button id="sp-calculate-btn" class="btn btn-primary mt-4" disabled>Calcular SP</button>
+                        <div id="sp-result" class="result-box hidden" aria-live="polite"></div>
+                        <details class="mt-4">
+                            <summary class="text-sm font-semibold text-gray-600 italic">+ Ver explicación del indicador</summary>
+                            <div id="sp-explanation-text" class="text-sm bg-gray-100 p-3 rounded-md mt-2">
+                               <!-- Text updated dynamically -->
+                            </div>
+                        </details>
+                    </div>
+                </details>
+                
+                <hr class="my-6"/>
+
+                <div id="nen-button-container" class="mt-6">
+                     <button id="nen-calculate-btn" class="btn btn-primary" disabled>Calcular NEN (Resultado Final)</button>
+                </div>
+
+                <hr id="final-separator" class="my-6 hidden"/>
+
+                <!-- Final Result Section -->
+                <div id="final-result-section" class="hidden text-center">
+                     <h2 class="text-xl font-bold font-serif">Tu Resultado Final</h2>
+                     <div id="nen-result" class="mt-4" aria-live="polite"></div>
+                     <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-6">
+                         <button id="copy-results-btn" class="btn btn-secondary">Copiar resultados</button>
+                         <button id="download-results-btn" class="btn btn-secondary">Descargar resultados</button>
+                     </div>
+                     <button id="restart-btn" class="btn btn-primary mt-3">Reiniciar Calculadora</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Info Modal -->
+    <div id="info-modal" class="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 relative">
+            <button id="close-modal-btn" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <h2 class="text-2xl font-bold font-serif mb-4">Cómo usar la Calculadora NEN</h2>
+            <div class="space-y-4 text-left text-gray-700">
+                <div>
+                    <h3 class="font-bold">1. Elige el período de cálculo</h3>
+                    <ul class="list-disc pl-5 mt-1">
+                        <li><strong>Diario:</strong> ingresa los datos de un día típico.</li>
+                        <li><strong>Semanal:</strong> ingresa los promedios de tu semana.</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-bold">2. Responde cada indicador</h3>
+                    <ul class="list-disc pl-5 mt-1 space-y-1">
+                        <li><strong>ARC (Acción Reactiva Compulsiva):</strong> cuánto tiempo dedicas a apagar urgencias que podrías delegar versus tu rol real como director.</li>
+                        <li><strong>CE (Control Excesivo):</strong> cuántas horas trabajas resolviendo por tu equipo versus liderando estratégicamente.</li>
+                        <li><strong>SP (Sacrificio Personal):</strong> la proporción entre horas de trabajo y horas de vida personal (sin contar el sueño).</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-bold">3. Calcula tus resultados</h3>
+                    <p>En cada indicador recibirás un resultado, una reflexión y observaciones según tus propios datos. Al final, la calculadora integra todo en tu <strong>Resultado NEN</strong>:</p>
+                    <ul class="list-disc pl-5 mt-1">
+                        <li><strong>Esclavitud Crítica:</strong> tu negocio te gobierna.</li>
+                        <li><strong>Esclavitud Moderada:</strong> equilibrio frágil, aún manejable.</li>
+                        <li><strong>Liderazgo Libre:</strong> diriges con balance entre empresa y vida.</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-bold">4. Copia y exporta tus resultados</h3>
+                    <ul class="list-disc pl-5 mt-1 space-y-1">
+                         <li><strong>Botón Copiar resultados:</strong> copia la información directamente a tu portapapeles, lista para pegar en una hoja de cálculo (para que hagas un expediente de tus indicadores y lo grafiques 😉) .</li>
+                         <li><strong>Botón Descargar resultados:</strong> genera un archivo de texto que puedes guardar y consultar.</li>
+                    </ul>
+                     <p class="mt-2">Ambos manejan tres columnas: <strong>Indicador,</strong> <strong>Resultado</strong> y <strong>Periodo (Día o Semana)</strong>. Esto te permite dar seguimiento a tu evolución y comparar periodos.</p>
+                </div>
+                <div>
+                    <h3 class="font-bold">Recomendación</h3>
+                    <p>Usa esta calculadora varias veces (un día ocupado, un día relajado, una semana completa). Así verás patrones y no solo una foto aislada.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // ---------- Helpers ----------
+            function pickRandom(arr) {
+              if (!arr || !arr.length) return "";
+              return arr[Math.floor(Math.random() * arr.length)];
+            }
+
+            function hoursBetweenTimes(wakeTime, sleepTime) {
+              if (!wakeTime || !sleepTime) return NaN;
+              const [wh, wm] = wakeTime.split(':').map(Number);
+              const [sh, sm] = sleepTime.split(':').map(Number);
+              const wakeMins = wh * 60 + wm;
+              const sleepMins = sh * 60 + sm;
+              const mins = (sleepMins < wakeMins) ? (24*60 - wakeMins) + sleepMins : (sleepMins - wakeMins);
+              return mins / 60;
+            }
+
+            const fmt = (n) => Number.isFinite(n) ? n.toFixed(2) : '—';
+
+            // ---------- Content Objects ----------
+            const reflections = {
+              arc: {
+                high: [ // Reactividad crónica
+                  "¿De verdad la empresa no puede funcionar sin ti… o eres tú quien necesita sentirse imprescindible?",
+                  "Si hoy no intervinieras en urgencias, ¿tu equipo crecería o se paralizaría?",
+                  "¿Tomas decisiones desde estrategia o desde la adrenalina de apagar incendios?",
+                  "¿Eres director… o bombero en jefe de tu negocio?",
+                  "¿Se repiten urgencias reales o es falta de procesos y límites?"
+                ],
+                mid: [ // Tendencia reactiva
+                  "¿Dónde cedes tu tiempo estratégico sin darte cuenta?",
+                  "¿Qué urgencias atendiste esta semana solo por sentirte ocupado?",
+                  "¿Cuánto de tu agenda fue importante y cuánto fue ruido?",
+                  "¿Qué precio pagas por las interrupciones pequeñas de cada día?",
+                  "¿Cuál fue tu victoria estratégica más clara esta semana?"
+                ],
+                low: [ // Actuar estratégicamente
+                  "¿Qué podrías sistematizar aún más para blindar tu agenda?",
+                  "¿Qué parte de tu equipo ya resuelve sin ti y merece reconocimiento?",
+                  "Tu calma es un indicador de liderazgo: ¿cómo la proteges?",
+                  "¿Qué soltaste que hoy funciona solo?",
+                  "¿Qué urgencias dejaron de tocar tu puerta gracias a tus prioridades?"
+                ]
+              },
+              ce: {
+                high: [ // Micromanagement crítico
+                  "¿Prefieres que el negocio dependa de ti… o que crezca sin ti?",
+                  "Si mañana no estás, ¿la empresa sigue operando?",
+                  "¿Tu tiempo refleja a un director estratégico o a otro operador?",
+                  "¿Quieres ser indispensable o irreemplazable por tu visión?",
+                  "¿Controlas personas o construyes líderes?"
+                ],
+                mid: [ // Control excesivo moderado
+                  "¿Temes más que tu equipo falle o dejar de sentirte necesario?",
+                  "¿Qué responsabilidad sigues cargando que ya podrías entregar?",
+                  "¿Qué corregiste tú que no era vital corregir?",
+                  "¿Te cuesta más soltar el control o sostener el agotamiento?",
+                  "¿Qué crecería si dejas que otros aprendan a fallar?"
+                ],
+                low: [ // Delegación efectiva
+                  "¿Cómo escalas esta forma de delegar para multiplicar resultados?",
+                  "¿Qué oportunidades aparecen al salir de la operación?",
+                  "¿Tu confianza se traduce en procesos claros y métricas?",
+                  "¿Qué decidirás con más calma gracias a este espacio?",
+                  "¿Qué visión de negocio puedes trabajar ahora?"
+                ]
+              },
+              sp: {
+                high: [ // Sacrificio insostenible
+                  "¿Qué mensaje das a tu familia si la empresa siempre va primero?",
+                  "¿Qué costo físico pagas que tu negocio no compensa?",
+                  "¿De qué sirve una empresa sana si tú estás exhausto?",
+                  "¿Qué hora vale más: la que no descansas hoy o la que perderás en salud mañana?",
+                  "¿Y si tu empresa pudiera sostenerse sin sacrificarte?"
+                ],
+                mid: [ // Desgaste medio
+                  "¿Qué debes reforzar para que tu descanso no dependa de la fortuna?",
+                  "¿Cómo notarás que tu vida personal empieza a erosionarse?",
+                  "¿Qué ritual diario blindará el cierre de jornada?",
+                  "¿Qué relación se resiente primero cuando trabajas de más?",
+                  "¿Qué energía tendrías si cierras la semana sin deuda de descanso?"
+                ],
+                low: [ // Balance vital
+                  "¿Qué disfrutas más de este balance: claridad, energía o relaciones?",
+                  "¿Qué práticas de autocuidado sostienen este equilibrio?",
+                  "¿Qué meta puedes perseguir ahora que tu vida no es puro trabajo?",
+                  "¿Qué sientes cuando tu empresa avanza y tu vida también?",
+                  "¿Cómo protegerás este balance ante la próxima crisis?"
+                ]
+              },
+              nen: {
+                high: [ // Esclavitud crítica
+                  "¿Tu negocio es un proyecto de vida o una cárcel con logo?",
+                  "¿Qué libertad real tienes hoy como dueño?",
+                  "¿Qué aprende tu equipo si te ve atrapado en el agotamiento?",
+                  "¿De qué sirve facturar más si pierdes tu vida en el intento?",
+                  "¿Qué pasaría si rediseñas tu empresa para que te sirva a ti?"
+                ],
+                mid: [ // Esclavitud moderada
+                  "¿Qué decisión postergada puede liberarte antes de que sea tarde?",
+                  "¿Qué ajuste harás esta semana para blindar tu vida personal?",
+                  "¿Qué pequeno paso generará una diferencia enorme en tu libertad?",
+                  "¿Qué te impide poner límites claros desde hoy?",
+                  "¿Qué precio pagarás si la moderación deriva en desgaste crítico?"
+                ],
+                low: [ // Liderazgo libre
+                  "¿Qué oportunidades puedes crear con esta libertad?",
+                  "¿Qué legado de liderazgo quieres modelar en tu equipo?",
+                  "¿Qué enseñarías a otros directores aún atrapados?",
+                  "¿Cómo mantendrás este balance cuando todo crezca?",
+                  "¿Qué versión de ti disfruta más tu familia: el agotado o el libre?"
+                ]
+              }
+            };
+            const inputInsights = {
+              sleep: {
+                tooLittle: [
+                  "El rango de sueño reparador recomendado es de 7 a 8 horas por noche; estás por debajo. Eso compromete claridad mental y decisión estratégica.",
+                  "Dormir menos de 6 horas eleva el riesgo de agotamiento y sesgos en las decisiones. Tu empresa avanza, tu cuerpo se queda atrás.",
+                  "El descanso no es ocio: es estrategia. Un cerebro fatigado decide en automático."
+                ],
+                tooMuch: [
+                  "Dormir más de 9 horas de forma habitual puede indicar fatiga acumulada o baja energía. Revisa carga, nutrición y horarios.",
+                  "El exceso de sueño no siempre es descanso: a veces es un síntoma de sobrecarga prolongada.",
+                  "Si duermes por encima de 9 h, evalúa calidad del sueño y estrés residual."
+                ],
+                healthy: [
+                  "Mantener 7–8 horas de sueño apoya claridad, memoria y regulación emocional.",
+                  "Buen descanso: base para sostener decisiones estratégicas sin reactividad.",
+                  "Dormir bien es una ventaja competitiva subestimada en dirección."
+                ]
+              },
+              workVsPersonal: {
+                overwork: [
+                  "Reportaste más horas de trabajo que de vida personal; ese patrón es insostenible. La visión se degrada sin espacio personal.",
+                  "En muchos países OCDE, la jornada promedio ronda 37–40 h/semana. Si estás por encima, ya rozas zona de desgaste.",
+                  "Si tu vida personal cae por debajo del 30% de tus horas despierto, la balanza se inclina hacia la esclavitud empresarial."
+                ],
+                balanced: [
+                  "Tu relación trabajo/vida personal luce razonable; mantén rituales de cierre para protegerla.",
+                  "El impacto se mide por decisiones de calidad, no por horas brutas trabajadas.",
+                  "Balance aceptable: documenta límites y horarios para sostenerlo."
+                ],
+                personalHeavy: [
+                  "Reportaste más horas personales que laborales en tu día activo. Disfrutar no es un problema; descuidar el negocio sí. Reequilibra sin volver al micromanagement.",
+                  "Tu tiempo personal supera el 60% de tus horas despierto. Esa amplitud puede vaciar la tracción del negocio si no proteges bloques estratégicos diarios.",
+                  "Soltar no es ausentarte: suelta operación, NO dirección. Asegura ventanas fijas de decisión y revisión de métricas.",
+                  "Cuando el disfrute desplaza lo estratégico, la operación se resiente y refuerza la idea de que solo funciona si tú controlas todo. Ajusta rumbo, no regreses al control total.",
+                  "La libertad se sostiene con ritmos: bloques estratégicos, tableros de control y límites a la dispersión."
+                ]
+              },
+              arcLoad: {
+                urgentHeavy: [
+                  "Si más del 50% de tu tiempo es urgencias, no diriges: apagas incendios premium.",
+                  "Cada urgencia no delegada refuerza que tú eres el solucionador oficial. Rompe el ciclo con procesos.",
+                  "El crecimiento se frena cuando lo urgente secuestra lo estratégico."
+                ],
+                reasonable: [
+                  "Nivel de urgencias manejable. Establece ‘ventanas de respuesta’ para no canibalizar lo estratégico.",
+                  "Sigue afinando criterios de prioridad: no todas las alarmas merecen tu tiempo.",
+                  "Delegar urgencias repetitivas es madurar al equipo."
+                ]
+              },
+              ceLoad: {
+                byTeam: [
+                  "Reportaste más horas resolviendo por tu equipo que en tu rol: micromanagement clásico.",
+                  "Un director sano invierte al menos ~70% en dirección/estrategia. Tus datos sugieren lo contrario.",
+                  "Cada hora haciendo trabajo operativo es una hora menos decidiendo el rumbo."
+                ],
+                balanced: [
+                  "Buen signo: tu tiempo se orienta más a dirección que a operación.",
+                  "Convierte tu confianza en procesos, checklists y métricas para sostenerlo.",
+                  "Protege este reparto de tiempo con agendas de decisión y tableros de control."
+                ],
+                underStrategy: [
+                  "Tu tiempo estratégico está por debajo de lo necesario para sostener dirección. No vuelvas al control; define rutinas de revisión y decisiones clave.",
+                  "La delegación sin dirección se convierte en abandono. Recupera el timón con bloques de enfoque y métricas semanales.",
+                  "Menos de 40–50% del tiempo en dirección suele vaciar el avance. Vuelve a la estrategia con intención.",
+                  "Soltaste operación, pero también soltaste decisiones. Reinstala tus cadencias: prioridades, KPIs y riesgos.",
+                  "La autonomía del equipo crece si la dirección es visible. Regresa a los rituales: prioridades del día, revisión de tablero y bloque de decisiones."
+                ]
+              }
+            };
+            const enrichedThresholds = {
+              arc: {
+                2: {
+                  title: "Reactividad crónica",
+                  detail: "Tu semana está dominada por urgencias que otros podrían resolver. Ese patrón te saca de la estrategia y te encadena al corto plazo.",
+                  reflectionsKey: "arc.high"
+                },
+                1: {
+                  title: "Tendencia reactiva",
+                  detail: "Vas partiendo tu tiempo entre lo estratégico y lo urgente. No parece grave, pero es un drenaje constante de crecimiento.",
+                  reflectionsKey: "arc.mid"
+                },
+                [-Infinity]: {
+                  title: "Actuar estratégicamente",
+                  detail: "Logras delegar y concentrarte en lo que solo tú puedes hacer. Este es el terreno del liderazgo real.",
+                  reflectionsKey: "arc.low"
+                }
+              },
+              ce: {
+                2: {
+                  title: "Micromanagement crítico",
+                  detail: "Estás resolviendo demasiado por tu equipo. Te vuelves cuello de botella y la organización depende de tu agotamiento.",
+                  reflectionsKey: "ce.high"
+                },
+                1: {
+                  title: "Control excesivo",
+                  detail: "Delegas a medias. Hay temor a fallas o a perder relevancia; ambos son más caros que un error puntual.",
+                  reflectionsKey: "ce.mid"
+                },
+                [-Infinity]: {
+                  title: "Delegación efectiva",
+                  detail: "Tu agenda ya se usa para pensar, decidir y dirigir. Sigue escalando procesos y métricas.",
+                  reflectionsKey: "ce.low"
+                }
+              },
+              sp: {
+                3: {
+                  title: "Sacrificio insostenible",
+                  detail: "Trabajas más de lo que descansas. El negocio avanza, pero a costa de tu energía, salud y relaciones.",
+                  reflectionsKey: "sp.high"
+                },
+                1: {
+                  title: "Desgaste medio",
+                  detail: "Hay cierto balance, pero frágil. Un par de semanas malas y la deuda de descanso explota.",
+                  reflectionsKey: "sp.mid"
+                },
+                [-Infinity]: {
+                  title: "Balance vital",
+                  detail: "Equilibrio sano entre trabajo y vida personal. Sostener esto te permite dirigir con claridad.",
+                  reflectionsKey: "sp.low"
+                }
+              }
+            };
+            const enrichedNEN = {
+              high: {
+                title: "Esclavitud crítica",
+                lead: "Tu negocio gobierna tu vida.",
+                detail: "Estás atrapado en urgencias, resolviendo por otros y sacrificando tu vida personal en exceso. El liderazgo estratégico empieza cuando tu empresa depende de sistemas, no de tu cansancio.",
+                reflectionsKey: "nen.high"
+              },
+              mid: {
+                title: "Esclavitud moderada",
+                lead: "Equilibrio frágil, estás a tiempo de corregir.",
+                detail: "Manejable, pero con señales claras de absorción por el negocio. Ajusta delegación, prioridades y límites personales antes de que el desgaste sea estructural.",
+                reflectionsKey: "nen.mid"
+              },
+              low: {
+                title: "Liderazgo libre",
+                lead: "Diriges con equilibrio y proyección.",
+                detail: "Tu rol directivo, la delegación y tu vida personal están en buen estado. Aquí florece un negocio escalable y una vida plena.",
+                reflectionsKey: "nen.low"
+              }
+            };
+            
+            // ---------- Builders de mensajes por input ----------
+            function buildSleepInsights({ wakeTime, sleepTime, workHours }) {
+              const insights = [];
+              const awake = hoursBetweenTimes(wakeTime, sleepTime);
+              if (isNaN(awake)) return insights;
+
+              const sleep = 24 - awake; // horas de sueño estimadas
+              if (sleep < 7) insights.push(pickRandom(inputInsights.sleep.tooLittle));
+              else if (sleep > 9) insights.push(pickRandom(inputInsights.sleep.tooMuch));
+              else insights.push(pickRandom(inputInsights.sleep.healthy));
+
+              if (!isNaN(workHours) && workHours > 0) {
+                const personal = awake - workHours;
+                const personalPct = (personal / awake) * 100;
+                if (personalPct < 30) {
+                    insights.push(pickRandom(inputInsights.workVsPersonal.overwork));
+                } else if (personalPct > 60) {
+                    insights.push(pickRandom(inputInsights.workVsPersonal.personalHeavy));
+                } else {
+                    insights.push(pickRandom(inputInsights.workVsPersonal.balanced));
+                }
+                
+                // New insight for low work hours
+                if (workHours < 4) { // Assuming less than 4 hours is low
+                    insights.push(pickRandom(inputInsights.workVsPersonal.personalHeavy));
+                }
+
+              }
+              return insights;
+            }
+
+            function buildARCInsights({ mode, weeklySliderValue, dailyUrgent, dailyRole }) {
+              const insights = [];
+              let urgentShare = NaN;
+
+              if (mode === "semanal" && typeof weeklySliderValue === "number") {
+                urgentShare = 100 - weeklySliderValue;
+              } else if (mode === "diario" && typeof dailyUrgent === "number" && typeof dailyRole === "number") {
+                const total = dailyUrgent + dailyRole;
+                if (total === 0) return insights;
+                urgentShare = (dailyUrgent / total) * 100;
+              }
+
+              if (!isNaN(urgentShare)) {
+                if (urgentShare > 50) insights.push(pickRandom(inputInsights.arcLoad.urgentHeavy));
+                else insights.push(pickRandom(inputInsights.arcLoad.reasonable));
+              }
+              return insights;
+            }
+
+            function buildCEInsights({ mode, weeklyRolePct, dailyTotalHours, dailyRoleHours }) {
+              const insights = [];
+              let strategyShare = NaN;
+
+              if (mode === "semanal" && typeof weeklyRolePct === "number") {
+                strategyShare = weeklyRolePct; 
+              } else if (mode === "diario" && typeof dailyTotalHours === "number" && typeof dailyRoleHours === "number" && dailyTotalHours > 0) {
+                strategyShare = (dailyRoleHours / dailyTotalHours) * 100;
+              }
+
+              if (!isNaN(strategyShare)) {
+                if (strategyShare < 40) {
+                    insights.push(pickRandom(inputInsights.ceLoad.underStrategy));
+                } else if (strategyShare < 50) {
+                    insights.push(pickRandom(inputInsights.ceLoad.byTeam));
+                } else {
+                    insights.push(pickRandom(inputInsights.ceLoad.balanced));
+                }
+              }
+              return insights;
+            }
+
+            const finalResultSection = document.getElementById('final-result-section');
+            const finalSeparator = document.getElementById('final-separator');
+            const nenCalculateBtn = document.getElementById('nen-calculate-btn');
+            const nenButtonContainer = document.getElementById('nen-button-container');
+            const modeSelect = document.getElementById('calculation-mode-select');
+            const startBtn = document.getElementById('start-calculation-btn');
+            const indicatorsContainer = document.getElementById('indicators-container');
+            const copyResultsBtn = document.getElementById('copy-results-btn');
+            const downloadResultsBtn = document.getElementById('download-results-btn');
+            const infoBtn = document.getElementById('info-btn');
+            const infoModal = document.getElementById('info-modal');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+
+            let scores = { arc: NaN, ce: NaN, sp: NaN };
+            let finalReportData = {};
+            let needsRebalanceEver = false;
+
+            const explanationTexts = {
+                arc: {
+                    semanal: 'Cuando vives apagando fuegos, no puedes dirigir. El indicador “Acción Reactiva Compulsiva” (ARC), compara la proporción de eventos urgentes (que podrías delegar) que atiendes en una semana frente a las actividades que completas realmente de tu rol como Director/Dueño. Sirve para mostrar si tu tiempo está dirigido por las urgencias o por tus funciones estratégicas.',
+                    diario: 'Cuando vives apagando fuegos, no puedes dirigir. El indicador “Acción Reactiva Compulsiva” (ARC), compara cuántos eventos urgentes (que podrías delegar) atendiste ayer frente a cuántas actividades completaste realmente de tu rol como Director/Dueño. Sirve para mostrar si tu tiempo está dirigido por las urgencias o por tus funciones estratégicas.'
+                },
+                ce: {
+                    semanal: 'Un Director/Dueño debe liderar, no resolver lo que otros pueden hacer. El indicador Control Excesivo (CE) compara la proporción de horas en la semana que inviertes resolviendo tareas que debería manejar tu equipo frente a las horas que destinas a tu verdadero rol. Refleja si estás ejerciendo liderazgo estratégico o si estás cargando con responsabilidades que no te corresponden.',
+                    diario: 'Un Director/Dueño debe liderar, no resolver lo que otros pueden hacer. El indicador Control Excesivo (CE) compara las horas que invertiste ayer resolviendo tareas que debería manejar tu equipo y las horas que destinaste a tu verdadero rol. Refleja si estás ejerciendo liderazgo estratégico o si estás cargando con responsabilidades que no te corresponden.'
+                },
+                sp: {
+                    semanal: 'Tu negocio no debería sacrificar tu vida. El indicador Sacrificio Personal (SP) compara la proporción de horas en tu semana entre el trabajo y las dedicadas a descanso, familia y vida personal. Permite ver si tu negocio está avanzando a costa de tu energía, tu salud y tus relaciones.',
+                    diario: 'Tu negocio no debería sacrificar tu vida. El indicador Sacrificio Personal (SP) compara las horas de trabajo de ayer con las horas dedicadas a descanso, familia y vida personal. Permite ver si tu negocio está avanzando a costa de tu energía, tu salud y tus relaciones.'
+                }
+            };
+
+            const arcExplanation = document.getElementById('arc-explanation-text');
+            const ceExplanation = document.getElementById('ce-explanation-text');
+            const spExplanation = document.getElementById('sp-explanation-text');
+
+            const updateExplanations = (mode) => {
+                arcExplanation.textContent = explanationTexts.arc[mode];
+                ceExplanation.textContent = explanationTexts.ce[mode];
+                spExplanation.textContent = explanationTexts.sp[mode];
+            };
+
+
+            const checkAllCalculated = () => {
+                const ready = !isNaN(scores.arc) && !isNaN(scores.ce) && !isNaN(scores.sp);
+                nenCalculateBtn.disabled = !ready;
+                finalSeparator.classList.toggle('hidden', !ready);
+            };
+
+            const setupCalculator = (config) => {
+                // Common elements
+                const calculateBtn = document.getElementById(config.btnId);
+                const resultBox = document.getElementById(config.resultId);
+                const currentSection = document.getElementById(config.sectionId);
+                const summary = currentSection.querySelector('summary');
+
+                // Weekly elements
+                const weeklySlider = document.getElementById(config.sliderId);
+                const weeklyP1Val = document.getElementById(config.p1ValId);
+                const weeklyP2Val = document.getElementById(config.p2ValId);
+
+                // Daily elements
+                const dailyInputs = config.dailyInputIds.map(id => document.getElementById(id));
+                const ceTotalDaily = document.getElementById('ce-q-total-daily');
+                
+                const enableButton = () => { calculateBtn.disabled = false; };
+
+                // Listeners
+                weeklySlider.addEventListener('input', () => {
+                    const p2 = weeklySlider.value; const p1 = 100 - p2;
+                    weeklyP1Val.textContent = `${p1}%`; weeklyP2Val.textContent = `${p2}%`;
+                    enableButton();
+                });
+                dailyInputs.forEach(input => input.addEventListener('input', enableButton));
+
+                if (config.scoreKey === 'ce') {
+                    const ceDailySliderContainer = document.getElementById('ce-daily-slider-container');
+                    const ceDailySlider = document.getElementById('ce-daily-slider');
+                    const ceDailyP1Val = document.getElementById('ce-daily-p1-val');
+                    const ceDailyP2Val = document.getElementById('ce-daily-p2-val');
+                    ceTotalDaily.addEventListener('input', () => {
+                        const total = parseFloat(ceTotalDaily.value);
+                        if (!isNaN(total) && total > 0) {
+                            ceDailySliderContainer.classList.remove('hidden');
+                            ceDailySlider.max = total; ceDailySlider.value = total / 2;
+                            ceDailySlider.dispatchEvent(new Event('input'));
+                        } else {
+                            ceDailySliderContainer.classList.add('hidden');
+                        }
+                    });
+                    ceDailySlider.addEventListener('input', () => {
+                        const total = parseFloat(ceDailySlider.max); const p2 = parseFloat(ceDailySlider.value); const p1 = total - p2;
+                        ceDailyP1Val.textContent = `${p1.toFixed(1)} h`; ceDailyP2Val.textContent = `${p2.toFixed(1)} h`;
+                        enableButton();
+                    });
+                }
+                
+                if (config.scoreKey === 'sp') {
+                    const spWakeTime = document.getElementById('sp-wake-time');
+                    const spSleepTime = document.getElementById('sp-sleep-time');
+                    const spWorkHoursDisplay = document.getElementById('sp-work-hours-display');
+                    const spRestHoursDisplay = document.getElementById('sp-rest-hours-display');
+
+                    const updateSpDaily = () => {
+                        const workHours = parseFloat(ceTotalDaily.value);
+                        const wakeTime = spWakeTime.value;
+                        const sleepTime = spSleepTime.value;
+
+                        if (isNaN(workHours) || !wakeTime || !sleepTime) {
+                            calculateBtn.disabled = true;
+                            return;
+                        }
+
+                        const [wakeH, wakeM] = wakeTime.split(':').map(Number);
+                        const [sleepH, sleepM] = sleepTime.split(':').map(Number);
+                        const wakeMins = wakeH * 60 + wakeM;
+                        const sleepMins = sleepH * 60 + sleepM;
+                        let awakeMins = (sleepMins < wakeMins) ? (24*60 - wakeMins) + sleepMins : sleepMins - wakeMins;
+                        const awakeHours = awakeMins / 60;
+                        const restHours = awakeHours - workHours;
+
+                        spRestHoursDisplay.textContent = restHours.toFixed(1);
+                        
+                        if (restHours < 0) {
+                           spRestHoursDisplay.classList.add('text-red-600');
+                           spRestHoursDisplay.textContent += ' (Inválido)';
+                           calculateBtn.disabled = true;
+                        } else {
+                           spRestHoursDisplay.classList.remove('text-red-600');
+                           enableButton();
+                        }
+                    };
+
+                    spWakeTime.addEventListener('input', updateSpDaily);
+                    spSleepTime.addEventListener('input', updateSpDaily);
+                }
+
+                calculateBtn.addEventListener('click', () => {
+                    let p1, p2;
+                    const mode = modeSelect.value;
+
+                    if (mode === 'semanal') {
+                        p2 = parseFloat(weeklySlider.value); p1 = 100 - p2;
+                    } else { // Daily
+                        if (config.scoreKey === 'arc') {
+                            p1 = parseFloat(document.getElementById('arc-q1-daily').value);
+                            p2 = parseFloat(document.getElementById('arc-q2-daily').value);
+                            if (isNaN(p1) || isNaN(p2)) { alert('Ingresa ambos valores para ARC.'); return; }
+                            if ((p1 + p2) === 0) { alert('Ingresa al menos un evento u actividad.'); return; }
+                        } else if (config.scoreKey === 'ce') {
+                            const total = parseFloat(ceTotalDaily.value);
+                            if (isNaN(total)) { alert('Ingresa las horas de tu jornada laboral.'); return; }
+                            const ceDailySlider = document.getElementById('ce-daily-slider');
+                            p2 = parseFloat(ceDailySlider.value); p1 = total - p2;
+                        } else if (config.scoreKey === 'sp') {
+                            p1 = parseFloat(ceTotalDaily.value);
+                            const restHoursText = document.getElementById('sp-rest-hours-display').textContent;
+                            p2 = parseFloat(restHoursText);
+                            if (isNaN(p1) || isNaN(p2) || p2 < 0) {
+                                alert('Los valores para el cálculo de SP no son válidos. Revisa las horas de jornada y descanso.');
+                                return;
+                            }
+                        }
+                    }
+                    
+                    scores[config.scoreKey] = (p2 > 0) ? p1 / p2 : (p1 > 0 ? Infinity : 0);
+                    
+                    const thresholdKeys = Object.keys(config.thresholds).sort((a, b) => b - a);
+                    let chosen;
+                    for (const key of thresholdKeys) {
+                      if (scores[config.scoreKey] > key) {
+                        chosen = config.thresholds[key];
+                        break;
+                      }
+                    }
+
+                    let reflection = "";
+                    if (chosen && chosen.reflectionsKey) {
+                      const [cat, lvl] = chosen.reflectionsKey.split('.');
+                      reflection = pickRandom(reflections[cat][lvl]);
+                    }
+
+                    const dynamicInsights = [];
+                    if (config.scoreKey === 'arc') {
+                      const weeklyP2 = parseFloat(document.getElementById('arc-slider').value);
+                      const dailyUrgent = parseFloat(document.getElementById('arc-q1-daily')?.value);
+                      const dailyRole   = parseFloat(document.getElementById('arc-q2-daily')?.value);
+                      dynamicInsights.push(
+                        ...buildARCInsights({
+                          mode,
+                          weeklySliderValue: isNaN(weeklyP2) ? undefined : weeklyP2,
+                          dailyUrgent: isNaN(dailyUrgent) ? undefined : dailyUrgent,
+                          dailyRole: isNaN(dailyRole) ? undefined : dailyRole
+                        })
+                      );
+                    }
+
+                    if (config.scoreKey === 'ce') {
+                      if (mode === 'semanal') {
+                        const weeklyRolePct = parseFloat(document.getElementById('ce-slider').value);
+                        dynamicInsights.push(...buildCEInsights({ mode, weeklyRolePct }));
+                      } else {
+                        const total = parseFloat(document.getElementById('ce-q-total-daily').value);
+                        const roleHours = parseFloat(document.getElementById('ce-daily-slider').value);
+                        dynamicInsights.push(
+                          ...buildCEInsights({
+                            mode,
+                            dailyTotalHours: isNaN(total) ? undefined : total,
+                            dailyRoleHours: isNaN(roleHours) ? undefined : roleHours
+                          })
+                        );
+                      }
+                    }
+
+                    if (config.scoreKey === 'sp') {
+                      if (mode === 'diario') {
+                        const wakeTime = document.getElementById('sp-wake-time').value;
+                        const sleepTime = document.getElementById('sp-sleep-time').value;
+                        const workHours = parseFloat(document.getElementById('ce-q-total-daily')?.value);
+                        dynamicInsights.push(...buildSleepInsights({ wakeTime, sleepTime, workHours: isNaN(workHours) ? undefined : workHours }));
+                      } else {
+                        const p2 = parseFloat(document.getElementById('sp-slider').value);
+                        const descansoPct = isNaN(p2) ? undefined : p2;
+                        if (typeof descansoPct === "number") {
+                            if (descansoPct < 50) {
+                                dynamicInsights.push(pickRandom(inputInsights.workVsPersonal.overwork));
+                            } else if (descansoPct > 60) {
+                                dynamicInsights.push(pickRandom(inputInsights.workVsPersonal.personalHeavy));
+                            } else {
+                                dynamicInsights.push(pickRandom(inputInsights.workVsPersonal.balanced));
+                            }
+                        }
+                      }
+                    }
+
+                    const needsRebalance = dynamicInsights.some(t =>
+                      t.includes("supera el 60%") || t.includes("por debajo de lo necesario")
+                    );
+
+                    if(needsRebalance) {
+                        needsRebalanceEver = true;
+                    }
+
+                    const reframeHTML = needsRebalance
+                      ? `<div class="mt-3 text-sm p-2 rounded bg-amber-50 border border-amber-200">
+                           <span class="font-semibold">Alerta Preventiva de Descuido de Negocio:</span> soltar la operación no significa soltar la dirección.
+                           Disfruta tu vida <em>y</em> protege el negocio con bloques estratégicos diarios y revisión de métricas.
+                         </div>`
+                      : "";
+
+                    const insightsHTML = dynamicInsights.length
+                      ? `<div class="mt-3 text-sm text-left p-2 bg-gray-50 rounded">
+                           <div class="font-semibold mb-1">Observaciones según tus datos:</div>
+                           <ul class="list-disc pl-5 space-y-1">${dynamicInsights.map(x => `<li>${x}</li>`).join('')}</ul>
+                         </div>`
+                      : "";
+
+                    const reflectionHTML = reflection
+                      ? `<p class="mt-3 text-sm font-semibold italic text-gray-700">${reflection}</p>`
+                      : "";
+
+                    resultBox.innerHTML = `
+                      <p class="font-bold text-lg">${chosen.title}</p>
+                      <p class="mt-2 text-sm">${chosen.detail}</p>
+                      ${reflectionHTML}
+                      ${insightsHTML}
+                      ${reframeHTML}
+                    `;
+                    
+                    resultBox.classList.remove('hidden');
+                    currentSection.querySelectorAll('input').forEach(input => input.disabled = true);
+                    calculateBtn.classList.add('hidden');
+                    summary.classList.add('disabled');
+                    
+                    if (config.nextSectionId) {
+                        const nextSection = document.getElementById(config.nextSectionId);
+                        nextSection.querySelector('summary').classList.remove('disabled');
+                        nextSection.open = true;
+                        if(config.scoreKey === 'ce' && modeSelect.value === 'diario') {
+                           document.getElementById('sp-work-hours-display').textContent = ceTotalDaily.value;
+                           document.getElementById('sp-wake-time').dispatchEvent(new Event('input'));
+                        }
+                    }
+                    
+                    checkAllCalculated();
+                    currentSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                });
+
+                return { summary, currentSection, calculateBtn, resultBox };
+            };
+
+            const calculators = {
+                arc: setupCalculator({
+                    sectionId: 'arc-section', nextSectionId: 'ce-section', sliderId: 'arc-slider', p1ValId: 'arc-p1-val', p2ValId: 'arc-p2-val', dailyInputIds: ['arc-q1-daily', 'arc-q2-daily'], btnId: 'arc-calculate-btn', resultId: 'arc-result', scoreKey: 'arc',
+                    thresholds: enrichedThresholds.arc,
+                }),
+                ce: setupCalculator({
+                    sectionId: 'ce-section', nextSectionId: 'sp-section', sliderId: 'ce-slider', p1ValId: 'ce-p1-val', p2ValId: 'ce-p2-val', dailyInputIds: ['ce-q-total-daily', 'ce-daily-slider'], btnId: 'ce-calculate-btn', resultId: 'ce-result', scoreKey: 'ce',
+                    thresholds: enrichedThresholds.ce,
+                }),
+                sp: setupCalculator({
+                    sectionId: 'sp-section', sliderId: 'sp-slider', p1ValId: 'sp-p1-val', p2ValId: 'sp-p2-val', dailyInputIds: ['sp-wake-time', 'sp-sleep-time'], btnId: 'sp-calculate-btn', resultId: 'sp-result', scoreKey: 'sp',
+                    thresholds: enrichedThresholds.sp,
+                })
+            };
+
+            nenCalculateBtn.addEventListener('click', () => {
+                 if (isNaN(scores.arc) || isNaN(scores.ce) || isNaN(scores.sp)) { alert('Por favor, calcula los tres indicadores primero.'); return; }
+                const nenScore = (scores.arc + scores.ce + (3 * scores.sp)) / 5;
+                const nenResultBox = document.getElementById('nen-result');
+                
+                let bucket;
+                if (nenScore > 3.0) bucket = 'high';
+                else if (nenScore >= 1.5) bucket = 'mid';
+                else bucket = 'low';
+
+                const cfg = enrichedNEN[bucket];
+                const reflection = pickRandom(reflections.nen[bucket]);
+
+                finalReportData = {
+                    nenScore: fmt(nenScore),
+                    nenClassification: cfg.title,
+                    nenLead: cfg.lead,
+                    nenDetail: cfg.detail,
+                    nenReflection: reflection,
+                    arcScore: fmt(scores.arc),
+                    ceScore: fmt(scores.ce),
+                    spScore: fmt(scores.sp)
+                };
+
+                let nenHTML = `
+                  <p class="font-bold text-2xl ${bucket==='high'?'text-red-600': bucket==='mid'?'text-orange-500':'text-green-600'}">${cfg.title}</p>
+                  <p class="mt-2 text-lg">${cfg.lead}</p>
+                  <div class="mt-4 text-sm text-left p-2 bg-gray-50 rounded">${cfg.detail}</div>
+                  <p class="mt-3 text-sm font-semibold italic text-gray-700">${reflection}</p>
+                `;
+                
+                if (bucket !== 'low' && needsRebalanceEver) {
+                  nenHTML += `
+                    <div class="mt-4 text-sm p-2 rounded bg-blue-50 border border-blue-200">
+                      <div class="font-semibold mb-1">Alerta Preventiva de Descuido de Negocio:</div>
+                      <p class="italic my-2">¿Estás descuidando tu negocio de manera desequilibrada al estar dando prioridad a tu vida personal?</p>
+                      <div class="font-semibold mb-1">Siguiente paso sugerido:</div>
+                      Establece 2–3 bloques diarios de 60–90 min de estrategia (prioridades, riesgos, decisiones)
+                      y un checklist de revisión de KPIs. Disfrute personal sí; dirección ausente, no.
+                    </div>`;
+                }
+                
+                nenResultBox.innerHTML = nenHTML;
+                
+                Object.values(calculators).forEach(calc => calc.currentSection.open = false);
+                nenButtonContainer.classList.add('hidden');
+
+                finalSeparator.classList.add('hidden');
+                finalResultSection.classList.remove('hidden');
+                finalResultSection.scrollIntoView({ behavior: 'smooth', block: 'end' });
+            });
+
+            copyResultsBtn.addEventListener('click', async () => {
+              const today = new Date();
+              const dateString = `${today.getDate().toString().padStart(2,'0')}/${(today.getMonth()+1).toString().padStart(2,'0')}/${today.getFullYear()}`;
+              const tsv = [
+                `ARC\t${finalReportData.arcScore}\t${dateString}`,
+                `CE\t${finalReportData.ceScore}\t${dateString}`,
+                `SP\t${finalReportData.spScore}\t${dateString}`,
+                `NEN\t${finalReportData.nenScore}\t${dateString}`
+              ].join('\n');
+
+              try {
+                await navigator.clipboard.writeText(tsv);
+                copyResultsBtn.textContent = '¡Copiado!';
+              } catch {
+                 // Fallback for restricted environments
+                const textArea = document.createElement('textarea');
+                textArea.value = tsv;
+                textArea.style.position = 'fixed';
+                textArea.style.top = '-9999px';
+                textArea.style.left = '-9999px';
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    const successful = document.execCommand('copy');
+                    if (successful) {
+                        copyResultsBtn.textContent = '¡Copiado!';
+                    } else {
+                        copyResultsBtn.textContent = 'Error al copiar';
+                    }
+                } catch (err) {
+                    copyResultsBtn.textContent = 'Error al copiar';
+                }
+                document.body.removeChild(textArea);
+              }
+              setTimeout(() => { copyResultsBtn.textContent = 'Copiar resultados'; }, 2000);
+            });
+
+            downloadResultsBtn.addEventListener('click', () => {
+                const today = new Date();
+                const mode = modeSelect.value;
+                const iso = today.toISOString().slice(0,10);
+                let periodString = '';
+
+                function getWeekNumber(d) {
+                    d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+                    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+                    var yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+                    var weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+                    return weekNo;
+                }
+
+                if (mode === 'semanal') {
+                    periodString = `Cálculo de la Semana ${getWeekNumber(today)} del ${today.getFullYear()}`;
+                } else {
+                    periodString = `Cálculo del Día ${today.toLocaleDateString('es-ES')}`;
+                }
+
+                const buildIndicatorClassification = (score, thresholds, labels) => {
+                    let userClassification = '';
+                    let allClassifications = [];
+
+                    if (score > thresholds[0]) {
+                        userClassification = labels[0]; // High
+                    } else if (score > thresholds[1]) {
+                        userClassification = labels[1]; // Mid
+                    } else {
+                        userClassification = labels[2]; // Low
+                    }
+
+                    allClassifications.push(`${userClassification === labels[0] ? '[X]' : '[ ]'} ${labels[0]}`);
+                    allClassifications.push(`${userClassification === labels[1] ? '[X]' : '[ ]'} ${labels[1]}`);
+                    allClassifications.push(`${userClassification === labels[2] ? '[X]' : '[ ]'} ${labels[2]}`);
+                    
+                    return allClassifications.join('\n  ');
+                };
+
+                const arcReport = buildIndicatorClassification(scores.arc, [2, 1], ["ARC > 2 (Reactividad crónica - NEGATIVO)", "ARC 1-2 (Tendencia reactiva - NEUTRO)", "ARC < 1 (Actuar estratégicamente - POSITIVO)"]);
+                const ceReport = buildIndicatorClassification(scores.ce, [2, 1], ["CE > 2 (Micromanagement crítico - NEGATIVO)", "CE 1-2 (Control excesivo - NEUTRO)", "CE < 1 (Delegación efectiva - POSITIVO)"]);
+                const spReport = buildIndicatorClassification(scores.sp, [3, 1], ["SP > 3 (Sacrificio insostenible - NEGATIVO)", "SP 1-3 (Desgaste medio - NEUTRO)", "SP < 1 (Balance vital - POSITIVO)"]);
+
+                const detailedClassifications = `
+CLASIFICACIÓN DETALLADA DE INDICADORES:
+- ACCIÓN REACTIVA COMPULSIVA (ARC)
+  ${arcReport}
+
+- CONTROL EXCESIVO (CE)
+  ${ceReport}
+
+- SACRIFICIO PERSONAL (SP)
+  ${spReport}
+                `.trim();
+
+                const report = `
+RESULTADOS - NIVEL DE ESCLAVITUD AL NEGOCIO (NEN)
+Período: ${periodString}
+--------------------------------------------------
+
+RESULTADO FINAL:
+Clasificación: ${finalReportData.nenClassification}
+Score NEN: ${finalReportData.nenScore}
+${finalReportData.nenLead}
+${finalReportData.nenDetail}
+Reflexión: ${finalReportData.nenReflection}
+
+--------------------------------------------------
+SCORES INDIVIDUALES:
+- ARC (Acción Reactiva Compulsiva): ${finalReportData.arcScore}
+- CE (Control Excesivo): ${finalReportData.ceScore}
+- SP (Sacrificio Personal): ${finalReportData.spScore}
+
+${detailedClassifications}
+--------------------------------------------------
+                `;
+                const blob = new Blob([report.trim()], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Resultados_NEN_${mode==='semanal'?'SEMANA':'DIA'}_${iso}.txt`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
+            
+            document.getElementById('restart-btn').addEventListener('click', () => {
+                scores = { arc: NaN, ce: NaN, sp: NaN };
+                finalReportData = {};
+                needsRebalanceEver = false;
+                Object.values(calculators).forEach(calc => {
+                    if(!calc) return;
+                    calc.summary.classList.remove('disabled');
+                    calc.currentSection.querySelectorAll('input').forEach(input => {
+                        input.disabled = false;
+                        if (input.type === 'range') { input.value = input.id.includes('daily') ? input.max / 2 : 50; input.dispatchEvent(new Event('input')); } 
+                        else { input.value = ''; }
+                    });
+                    calc.resultBox.classList.add('hidden');
+                    calc.calculateBtn.classList.remove('hidden');
+                    calc.calculateBtn.disabled = true;
+                    calc.currentSection.open = false;
+                });
+                
+                document.querySelectorAll('[id$="-daily-slider-container"]').forEach(c => c.classList.add('hidden'));
+                indicatorsContainer.classList.add('hidden');
+                startBtn.classList.remove('hidden');
+                modeSelect.disabled = false;
+                nenButtonContainer.classList.remove('hidden');
+                nenCalculateBtn.disabled = true;
+                finalSeparator.classList.add('hidden');
+                finalResultSection.classList.add('hidden');
+                calculators.ce.summary.classList.add('disabled');
+                calculators.sp.summary.classList.add('disabled');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            modeSelect.addEventListener('change', (e) => {
+                const mode = e.target.value;
+                updateExplanations(mode);
+                const isWeekly = mode === 'semanal';
+                document.querySelectorAll('[id$="-weekly-input"]').forEach(el => el.classList.toggle('hidden', !isWeekly));
+                document.querySelectorAll('[id$="-daily-input"]').forEach(el => el.classList.toggle('hidden', isWeekly));
+            });
+            
+            startBtn.addEventListener('click', () => {
+                indicatorsContainer.classList.remove('hidden');
+                modeSelect.disabled = true;
+                startBtn.classList.add('hidden');
+                document.getElementById('arc-section').open = true;
+                updateExplanations(modeSelect.value); // Set initial explanation text
+            });
+
+            infoBtn.addEventListener('click', () => {
+                infoModal.classList.remove('hidden');
+            });
+            closeModalBtn.addEventListener('click', () => {
+                infoModal.classList.add('hidden');
+            });
+            infoModal.addEventListener('click', (e) => {
+                if (e.target === infoModal) {
+                    infoModal.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
