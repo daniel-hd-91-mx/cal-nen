@@ -540,6 +540,11 @@
                   "Soltar no es ausentarte: suelta operación, NO dirección. Asegura ventanas fijas de decisión y revisión de métricas.",
                   "Cuando el disfrute desplaza lo estratégico, la operación se resiente y refuerza la idea de que solo funciona si tú controlas todo. Ajusta rumbo, no regreses al control total.",
                   "La libertad se sostiene con ritmos: bloques estratégicos, tableros de control y límites a la dispersión."
+                ],
+                intermediate: [
+                  "Tu balance es aceptable, pero se inclina hacia el sacrificio. Es una zona de riesgo: un par de semanas malas pueden llevarte al desgaste.",
+                  "Estás en el límite. Aunque todavía no es insostenible, la balanza se inclina más hacia el trabajo que hacia tu vida personal. Cuidado con normalizarlo.",
+                  "El equilibrio es frágil aquí. Mantienes el ritmo, pero con poco margen para imprevistos sin sacrificar descanso. Es momento de reforzar límites."
                 ]
               },
               arcLoad: {
@@ -552,6 +557,11 @@
                   "Nivel de urgencias manejable. Establece ‘ventanas de respuesta’ para no canibalizar lo estratégico.",
                   "Sigue afinando criterios de prioridad: no todas las alarmas merecen tu tiempo.",
                   "Delegar urgencias repetitivas es madurar al equipo."
+                ],
+                intermediate: [
+                    "Tu agenda está dividida casi 50/50 entre lo urgente y lo estratégico. Es un equilibrio inestable que te mantiene ocupado pero frena el crecimiento.",
+                    "Estás en la zona neutra: no es crisis, pero tampoco es liderazgo claro. Cualquier imprevisto puede inclinar la balanza hacia la reactividad.",
+                    "Un balance cercano al 50% en urgencias es una señal de alerta. Define protocolos para delegar más y proteger tu tiempo estratégico."
                 ]
               },
               ceLoad: {
@@ -571,57 +581,62 @@
                   "Menos de 40–50% del tiempo en dirección suele vaciar el avance. Vuelve a la estrategia con intención.",
                   "Soltaste operación, pero también soltaste decisiones. Reinstala tus cadencias: prioridades, KPIs y riesgos.",
                   "La autonomía del equipo crece si la dirección es visible. Regresa a los rituales: prioridades del día, revisión de tablero y bloque de decisiones."
+                ],
+                intermediate: [
+                    "Tu balance entre operar y dirigir es frágil. Aunque no es crítico, la balanza se inclina hacia resolver por otros, lo que drena tu energía estratégica.",
+                    "Estás en una zona de riesgo. Un ligero aumento en la carga operativa podría sacarte por completo de tu rol de director. Refuerza la delegación.",
+                    "El equilibrio actual es inestable. Dedicas casi tanto tiempo a tareas de tu equipo como a las tuyas. Es momento de trazar una línea más clara."
                 ]
               }
             };
             const enrichedThresholds = {
               arc: {
-                2: {
-                  title: "Reactividad crónica",
+                1.5: {
+                  title: "Vives Apagando Incendios: Tu negocio te controla",
                   detail: "Tu semana está dominada por urgencias que otros podrían resolver. Ese patrón te saca de la estrategia y te encadena al corto plazo.",
                   reflectionsKey: "arc.high"
                 },
-                1: {
-                  title: "Tendencia reactiva",
+                0.67: {
+                  title: "Equilibrio Frágil: Entre estratega y bombero",
                   detail: "Vas partiendo tu tiempo entre lo estratégico y lo urgente. No parece grave, pero es un drenaje constante de crecimiento.",
                   reflectionsKey: "arc.mid"
                 },
                 [-Infinity]: {
-                  title: "Actuar estratégicamente",
+                  title: "Liderazgo Estratégico: Eres dueño de tu agenda",
                   detail: "Logras delegar y concentrarte en lo que solo tú puedes hacer. Este es el terreno del liderazgo real.",
                   reflectionsKey: "arc.low"
                 }
               },
               ce: {
-                2: {
-                  title: "Micromanagement crítico",
+                1.5: {
+                  title: "Indispensable y Agotado: Haces el trabajo de tu equipo",
                   detail: "Estás resolviendo demasiado por tu equipo. Te vuelves cuello de botella y la organización depende de tu agotamiento.",
                   reflectionsKey: "ce.high"
                 },
-                1: {
-                  title: "Control excesivo",
+                0.67: {
+                  title: "Delegación a Medias: Sueltas, pero no confías del todo",
                   detail: "Delegas a medias. Hay temor a fallas o a perder relevancia; ambos son más caros que un error puntual.",
                   reflectionsKey: "ce.mid"
                 },
                 [-Infinity]: {
-                  title: "Delegación efectiva",
+                  title: "Liderazgo que Multiplica: Tu equipo crece contigo",
                   detail: "Tu agenda ya se usa para pensar, decidir y dirigir. Sigue escalando procesos y métricas.",
                   reflectionsKey: "ce.low"
                 }
               },
               sp: {
-                3: {
-                  title: "Sacrificio insostenible",
+                1.5: {
+                  title: "Alerta Roja: Tu salud es el precio de tu negocio",
                   detail: "Trabajas más de lo que descansas. El negocio avanza, pero a costa de tu energía, salud y relaciones.",
                   reflectionsKey: "sp.high"
                 },
-                1: {
-                  title: "Desgaste medio",
+                0.67: {
+                  title: "Batería Baja: Sostienes el ritmo, pero a un costo alto",
                   detail: "Hay cierto balance, pero frágil. Un par de semanas malas y la deuda de descanso explota.",
                   reflectionsKey: "sp.mid"
                 },
                 [-Infinity]: {
-                  title: "Balance vital",
+                  title: "Liderazgo Sostenible: Negocio sano, vida plena",
                   detail: "Equilibrio sano entre trabajo y vida personal. Sostener esto te permite dirigir con claridad.",
                   reflectionsKey: "sp.low"
                 }
@@ -664,6 +679,8 @@
                 const personalPct = (personal / awake) * 100;
                 if (personalPct < 30) {
                     insights.push(pickRandom(inputInsights.workVsPersonal.overwork));
+                } else if (personalPct < 40) {
+                    insights.push(pickRandom(inputInsights.workVsPersonal.intermediate));
                 } else if (personalPct > 60) {
                     insights.push(pickRandom(inputInsights.workVsPersonal.personalHeavy));
                 } else {
@@ -692,8 +709,13 @@
               }
 
               if (!isNaN(urgentShare)) {
-                if (urgentShare > 50) insights.push(pickRandom(inputInsights.arcLoad.urgentHeavy));
-                else insights.push(pickRandom(inputInsights.arcLoad.reasonable));
+                if (urgentShare > 60) {
+                    insights.push(pickRandom(inputInsights.arcLoad.urgentHeavy));
+                } else if (urgentShare > 40) {
+                    insights.push(pickRandom(inputInsights.arcLoad.intermediate));
+                } else {
+                    insights.push(pickRandom(inputInsights.arcLoad.reasonable));
+                }
               }
               return insights;
             }
@@ -711,8 +733,8 @@
               if (!isNaN(strategyShare)) {
                 if (strategyShare < 40) {
                     insights.push(pickRandom(inputInsights.ceLoad.underStrategy));
-                } else if (strategyShare < 50) {
-                    insights.push(pickRandom(inputInsights.ceLoad.byTeam));
+                } else if (strategyShare < 60) {
+                    insights.push(pickRandom(inputInsights.ceLoad.intermediate));
                 } else {
                     insights.push(pickRandom(inputInsights.ceLoad.balanced));
                 }
@@ -944,8 +966,10 @@
                         const p2 = parseFloat(document.getElementById('sp-slider').value);
                         const descansoPct = isNaN(p2) ? undefined : p2;
                         if (typeof descansoPct === "number") {
-                            if (descansoPct < 50) {
+                            if (descansoPct < 40) {
                                 dynamicInsights.push(pickRandom(inputInsights.workVsPersonal.overwork));
+                            } else if (descansoPct < 50) {
+                                dynamicInsights.push(pickRandom(inputInsights.workVsPersonal.intermediate));
                             } else if (descansoPct > 60) {
                                 dynamicInsights.push(pickRandom(inputInsights.workVsPersonal.personalHeavy));
                             } else {
@@ -1161,9 +1185,9 @@
                     return allClassifications.join('\n  ');
                 };
 
-                const arcReport = buildIndicatorClassification(scores.arc, [2, 1], ["ARC > 2 (Reactividad crónica - NEGATIVO)", "ARC 1-2 (Tendencia reactiva - NEUTRO)", "ARC < 1 (Actuar estratégicamente - POSITIVO)"]);
-                const ceReport = buildIndicatorClassification(scores.ce, [2, 1], ["CE > 2 (Micromanagement crítico - NEGATIVO)", "CE 1-2 (Control excesivo - NEUTRO)", "CE < 1 (Delegación efectiva - POSITIVO)"]);
-                const spReport = buildIndicatorClassification(scores.sp, [3, 1], ["SP > 3 (Sacrificio insostenible - NEGATIVO)", "SP 1-3 (Desgaste medio - NEUTRO)", "SP < 1 (Balance vital - POSITIVO)"]);
+                const arcReport = buildIndicatorClassification(scores.arc, [1.5, 0.67], ["ARC > 1.5 (Reactividad crónica - NEGATIVO)", "ARC 0.67-1.5 (Tendencia reactiva - NEUTRO)", "ARC < 0.67 (Actuar estratégicamente - POSITIVO)"]);
+                const ceReport = buildIndicatorClassification(scores.ce, [1.5, 0.67], ["CE > 1.5 (Micromanagement crítico - NEGATIVO)", "CE 0.67-1.5 (Control excesivo - NEUTRO)", "CE < 0.67 (Delegación efectiva - POSITIVO)"]);
+                const spReport = buildIndicatorClassification(scores.sp, [1.5, 0.67], ["SP > 1.5 (Sacrificio insostenible - NEGATIVO)", "SP 0.67-1.5 (Desgaste medio - NEUTRO)", "SP < 0.67 (Balance vital - POSITIVO)"]);
 
                 const detailedClassifications = `
 CLASIFICACIÓN DETALLADA DE INDICADORES:
